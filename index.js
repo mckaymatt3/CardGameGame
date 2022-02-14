@@ -9,9 +9,12 @@ let startingChipCount = 100;
 let gameBody = document.querySelector("#game-body");
 let startButton = document.querySelector("#btnStart");
 let hitButton = document.querySelector("#btnHit");
-let playersButton = document.querySelector("#")
+let playersButton = document.querySelector("#players-button");
+let newPlayerForm = document.querySelector("#new-player");
+let newNameForm = document.querySelector("#new-name");
+let playerDiv = document.querySelector("#players")
 
-let completeDeck, deckId, oneCard, deckSpace;
+let completeDeck, deckId, oneCard, deckSpace, playerArea, playerName, playerNumber;
 
 // Add DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function(){
@@ -58,15 +61,24 @@ function drawCard () {
 
 // Add Functions to Modify
 
-function startDeck() {
-    // Create or Modify Element
+// FOR PLAYERS BUTTON WANT TO CREATE A BLOCK THAT WILL HAVE DIV FOR IMAGE & CHIP COUNTER
 
+playersButton.addEventListener("click", function (event) {
+    playerArea = document.createElement("div")
+    playerName = document.createElement("h5")
+    playerNumber = document.createElement("h5")
 
-    // Add Content or Style to Element
+    playerArea.className = "newPlayerCard"
+    playerName.textContent = newNameForm.value
+    playerNumber.textContent = "Count: " + 0
 
+    playerArea.append(playerName, playerNumber)
+    playerDiv.append(playerArea)
 
-    // Append if Necessary
-}
+    newPlayerForm.reset()
+})
+
+// HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
 
 hitButton.addEventListener("click", function (event) {
     fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=1")

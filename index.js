@@ -16,7 +16,7 @@ let newNameForm = document.querySelector("#new-name");
 let playerDiv = document.querySelector("#players")
 
 let completeDeck, deckId, oneCard, deckSpace, playerArea, playerName, playerNumber;
-let playerChips, playerStartCard1, playerStartCard2, cardImage1, cardImage2;
+let playerChips, playerStartCard1, playerStartCard2, cardImage1, cardImage2, cardImage1Value, cardImage2Value;
 
 
 // Add DOMContentLoaded
@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function(){
     firstDeck();
     newDeck();
     drawCard();
-    drawTwoCards();
+    // drawTwoCards();
+    shuffleCards();
     
 });
 
@@ -53,7 +54,7 @@ function newDeck() {
 }
 
 function drawCard () {
-    fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=1")
+    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=1")
     .then((res) => res.json())
     .then((drawCard) => {
         oneCard = drawCard
@@ -63,18 +64,41 @@ function drawCard () {
 }
 
 function drawTwoCards () {
-    fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=2")
+    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=2")
     .then((res) => res.json())
     .then((drawCard) => { 
         cardImage1 = drawCard.cards[0].image
         cardImage2 = drawCard.cards[1].image
+        cardImage1Value = parseInt(drawCard.cards[0].value)
+        cardImage2Value = parseInt(drawCard.cards[1].value)
+        
+        playerStartCard1 = document.createElement("img")
+        playerStartCard2 = document.createElement("img")
+        
+        playerStartCard1.src = cardImage1
+        playerStartCard2.src = cardImage2
+        playerStartCard1.id = "deck-card"
+        playerStartCard2.id = "deck-card"
+        startingCardCount = cardImage1Value + cardImage2Value 
+        playerNumber.textContent = "Card Count: " + startingCardCount
+        
+        playerArea.append(playerStartCard1, playerStartCard2)
+
         console.log("Card Image 1: ", cardImage1)
         console.log("Card Image 2: ", cardImage2)
+        console.log("Card Image 1 Value: ", cardImage1Value)
+        console.log("Card Image 2 Value: ", cardImage2Value)
+
         console.log("TWO CARDS:", drawCard)
         // createGamblers(drawCard)
         });
 }
 
+function shuffleCards () {
+    fetch(`https://deckofcardsapi.com/api/deck/vnynz95sxexi/shuffle/?remaining=true`)
+    .then((res) => res.json())
+    .then((drawCard) => console.log(drawCard)) 
+}
 
 
 // Add Functions to Modify
@@ -87,26 +111,17 @@ playersButton.addEventListener("click", function (event) {
     playerName = document.createElement("h5")
     playerNumber = document.createElement("h5")
     playerChips = document.createElement("h5")
-    playerStartCard1 = document.createElement("img")
-    playerStartCard2 = document.createElement("img")
 
     // Add Content
     playerArea.className = "newPlayerCard"
     playerName.textContent = newNameForm.value
-    playerNumber.textContent = "Card Count: " + startingCardCount
     playerChips.textContent = "Chip Count: " + startingChipCount
-    
-    drawTwoCards();
-    playerStartCard1.src = cardImage1
-    playerStartCard2.src = cardImage2
-    playerStartCard1.id = "deck-card"
-    playerStartCard2.id = "deck-card"
 
     // Append Details
-    playerArea.append(playerName, playerNumber, playerChips,playerStartCard1,playerStartCard2)
+    playerArea.append(playerName, playerNumber, playerChips)
     playerDiv.append(playerArea)
 
-    
+    drawTwoCards();
     newPlayerForm.reset()
 })
 

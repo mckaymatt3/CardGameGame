@@ -4,6 +4,7 @@
 let deck = [];
 let players = [];
 let currentPlayer = 0;
+let startingCardCount = 0;
 let startingChipCount = 100;
 
 let gameBody = document.querySelector("#game-body");
@@ -15,6 +16,8 @@ let newNameForm = document.querySelector("#new-name");
 let playerDiv = document.querySelector("#players")
 
 let completeDeck, deckId, oneCard, deckSpace, playerArea, playerName, playerNumber;
+let playerChips, playerStartCard1, playerStartCard2, cardImage1, cardImage2;
+
 
 // Add DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function(){
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function(){
     firstDeck();
     newDeck();
     drawCard();
+    drawTwoCards();
     
 });
 
@@ -58,40 +62,71 @@ function drawCard () {
         });
 }
 
+function drawTwoCards () {
+    fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=2")
+    .then((res) => res.json())
+    .then((drawCard) => { 
+        cardImage1 = drawCard.cards[0].image
+        cardImage2 = drawCard.cards[1].image
+        console.log("Card Image 1: ", cardImage1)
+        console.log("Card Image 2: ", cardImage2)
+        console.log("TWO CARDS:", drawCard)
+        // createGamblers(drawCard)
+        });
+}
+
+
 
 // Add Functions to Modify
 
 // FOR PLAYERS BUTTON WANT TO CREATE A BLOCK THAT WILL HAVE DIV FOR IMAGE & CHIP COUNTER
 
 playersButton.addEventListener("click", function (event) {
+    // Create Elements for Player Area
     playerArea = document.createElement("div")
     playerName = document.createElement("h5")
     playerNumber = document.createElement("h5")
+    playerChips = document.createElement("h5")
+    playerStartCard1 = document.createElement("img")
+    playerStartCard2 = document.createElement("img")
 
+    // Add Content
     playerArea.className = "newPlayerCard"
     playerName.textContent = newNameForm.value
-    playerNumber.textContent = "Count: " + 0
+    playerNumber.textContent = "Card Count: " + startingCardCount
+    playerChips.textContent = "Chip Count: " + startingChipCount
+    
+    drawTwoCards();
+    playerStartCard1.src = cardImage1
+    playerStartCard2.src = cardImage2
+    playerStartCard1.id = "deck-card"
+    playerStartCard2.id = "deck-card"
 
-    playerArea.append(playerName, playerNumber)
+    // Append Details
+    playerArea.append(playerName, playerNumber, playerChips,playerStartCard1,playerStartCard2)
     playerDiv.append(playerArea)
 
+    
     newPlayerForm.reset()
 })
 
 // HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
 
 hitButton.addEventListener("click", function (event) {
+    function fetchCards () {
     fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=1")
     .then((res) => res.json())
     .then((drawCard) => {
         oneCard = drawCard
         console.log("ONE CARD:", drawCard)
-        createGamblers(drawCard)
+        createCards(drawCard)
         });  
     console.log("HIT BUTTON CLICKED")
+    }
+    fetchCards();
 })
 
-function createGamblers (card) {
+function createCards (card) {
     deckSpace = document.createElement("img")
     deckSpace.src = card.cards[0].image
     deckSpace.id = "deck-card"

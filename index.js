@@ -2,8 +2,8 @@
 // var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
 // var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 let deck = [];
-let players = [];
-let currentPlayer = 0;
+let allPlayers = [];
+let currentPlayer;
 let startingCardCount = 0;
 let startingChipCount = 100;
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function(){
     newDeck();
     drawCard();
     // drawTwoCards();
-    shuffleCards();
+    // shuffleCards();
     
 });
 
@@ -67,25 +67,35 @@ function drawTwoCards () {
     fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=2")
     .then((res) => res.json())
     .then((drawCard) => { 
+        // Declare Card Elements
         cardImage1 = drawCard.cards[0].image
         cardImage2 = drawCard.cards[1].image
-        cardImage1Value = parseInt(drawCard.cards[0].value)
-        cardImage2Value = parseInt(drawCard.cards[1].value)
+        // NEED TO UPDATE THE ACES TO BE ONE OR TEN
+        cardImage1Value = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
+        cardImage2Value = parseInt(drawCard.cards[1].value) ? parseInt(drawCard.cards[1].value) : 10
         
+        // Create Images for Cards
         playerStartCard1 = document.createElement("img")
         playerStartCard2 = document.createElement("img")
         
+        // Create Content
         playerStartCard1.src = cardImage1
         playerStartCard2.src = cardImage2
         playerStartCard1.id = "deck-card"
         playerStartCard2.id = "deck-card"
+        
         startingCardCount = cardImage1Value + cardImage2Value 
         playerNumber.textContent = "Card Count: " + startingCardCount
         
+
+        //Append
         playerArea.append(playerStartCard1, playerStartCard2)
 
+        //Console Logs
         console.log("Card Image 1: ", cardImage1)
+        console.log("Card Image 1 Type: ", typeof(cardImage1))
         console.log("Card Image 2: ", cardImage2)
+        console.log("Card Image 2 Type: ", typeof(cardImage2))
         console.log("Card Image 1 Value: ", cardImage1Value)
         console.log("Card Image 2 Value: ", cardImage2Value)
 
@@ -95,7 +105,7 @@ function drawTwoCards () {
 }
 
 function shuffleCards () {
-    fetch(`https://deckofcardsapi.com/api/deck/vnynz95sxexi/shuffle/?remaining=true`)
+    fetch(`https://deckofcardsapi.com/api/deck/vnynz95sxexi/shuffle/`)
     .then((res) => res.json())
     .then((drawCard) => console.log(drawCard)) 
 }
@@ -111,7 +121,7 @@ playersButton.addEventListener("click", function (event) {
     playerName = document.createElement("h5")
     playerNumber = document.createElement("h5")
     playerChips = document.createElement("h5")
-
+    
     // Add Content
     playerArea.className = "newPlayerCard"
     playerName.textContent = newNameForm.value
@@ -122,23 +132,22 @@ playersButton.addEventListener("click", function (event) {
     playerDiv.append(playerArea)
 
     drawTwoCards();
+    allPlayers.push(playerName)
+    console.log(allPlayers)
     newPlayerForm.reset()
 })
 
 // HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
 
 hitButton.addEventListener("click", function (event) {
-    function fetchCards () {
-    fetch("https://deckofcardsapi.com/api/deck/il3c2tz6fgoi/draw/?count=1")
+    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=1")
     .then((res) => res.json())
     .then((drawCard) => {
-        oneCard = drawCard
+        // currentPlayer = player
         console.log("ONE CARD:", drawCard)
         createCards(drawCard)
         });  
     console.log("HIT BUTTON CLICKED")
-    }
-    fetchCards();
 })
 
 function createCards (card) {
@@ -148,6 +157,16 @@ function createCards (card) {
     gameBody.append(deckSpace)
 }
 
+// New Game Button Below - to Shuffle Deck and Clear Out Players
+startButton.addEventListener("click", function () {
+    // Shuffle the Deck
+    shuffleCards();
+
+    // And Then Remove Elements
+    while (playerDiv.firstChild) {
+        playerDiv.removeChild(playerDiv.firstChild)
+    }
+})
 
 
 // function createGamblers(card) {

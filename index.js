@@ -13,6 +13,7 @@ let newGameButton = document.querySelector("#btnStart");
 let hitButton = document.querySelector("#btnHit");
 let stayButton = document.querySelector("#btnStay")
 let playersButton = document.querySelector("#players-button");
+let shuffleButton = document.querySelector("#btnShuffle")
 let newPlayerForm = document.querySelector("#new-player");
 let newNameForm = document.querySelector("#new-name");
 let playerDiv = document.querySelector("#players");
@@ -85,7 +86,9 @@ function drawTwoCards (player) {
         playerStartCard1.src = cardImage1
         playerStartCard2.src = cardImage2
         playerStartCard1.id = "deck-card"
+        playerStartCard1.className = "userCard"
         playerStartCard2.id = "deck-card"
+        playerStartCard2.className = "userCard"
         
         let CardCount = Object.values(playerData[currentPlayer])
         playerNumber.textContent = "Card Count: " + CardCount[2]
@@ -136,6 +139,7 @@ playersButton.addEventListener("click", function (event) {
     playerArea = document.createElement("div")
     playerName = document.createElement("h5")
     playerChips = document.createElement("h5")
+    playerNumber = document.createElement("h5")
     
     // Add Content
     playerName.textContent = newNameForm.value
@@ -179,8 +183,8 @@ dealButton.addEventListener("click", function () {
 })
 
 
-// New Game Button Below - to Shuffle Deck and Clear Out Players
-newGameButton.addEventListener("click", function () {
+// Shuffle Button Below - to Shuffle Deck and Clear Out Players
+shuffleButton.addEventListener("click", function () {
     // Shuffle the Deck
     shuffleCards();
 
@@ -189,6 +193,32 @@ newGameButton.addEventListener("click", function () {
         playerDiv.removeChild(playerDiv.firstChild)
     }
 })
+
+// New Game Button Below - to Clear Out Each Game Content
+newGameButton.addEventListener("click", function () {
+  //  
+    playerData.forEach(individual => {
+      newGame(individual)
+      console.log("NEw GAME PLAYER DIV: ", individual)
+  });
+})
+
+function newGame (player) {
+    // remove Player Count h5 Element
+    let playerNumberRemove = player.playerDiv.querySelector(".playerNumber")
+    console.log("Player Number Remove: ", playerNumberRemove)
+    playerNumberRemove.remove();
+    // reset player count to zero
+    player.cardCount = 0
+    console.log("Player Card Count to Zero: ", player.cardCount)
+    // reset current player to zero
+    currentPlayer = 0
+    // remove card
+    let playerCards = document.querySelectorAll(".userCard")
+    console.log(playerCards)
+    playerCards.forEach(element => element.remove());
+}
+
 
 // HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
 
@@ -201,6 +231,7 @@ hitButton.addEventListener("click", function (event) {
         deckSpace = document.createElement("img")
         deckSpace.src = drawCard.cards[0].image
         deckSpace.id = "deck-card"
+        deckSpace.className = "userCard"
         deckSpaceValue = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
         let playerNumberUpdate = playerData[currentPlayer].playerDiv.querySelector(".playerNumber")
         console.log("Player Number Update: ", playerNumberUpdate)
@@ -225,11 +256,10 @@ stayButton.addEventListener("click", function (event) {
     currentPlayer = currentPlayer
     }
     else {
-        while (playerDiv.firstChild) {
-        playerDiv.removeChild(playerDiv.firstChild)
+        currentPlayer = currentPlayer
     }
     }
-})
+)
 
 // function eachTurn () {
 //     console.log("ALL PLAYERS: ", allPlayers)

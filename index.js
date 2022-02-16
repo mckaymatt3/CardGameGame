@@ -2,22 +2,24 @@
 // var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
 // var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 let deck = [];
-let allPlayers = [];
-let currentPlayer;
+let playerData = [];
+let currentPlayer = 0;
 let startingCardCount = 0;
 let startingChipCount = 100;
 
 let gameBody = document.querySelector("#game-body");
-let startButton = document.querySelector("#btnStart");
+let dealButton = document.querySelector("#btnDeal");
+let newGameButton = document.querySelector("#btnStart");
 let hitButton = document.querySelector("#btnHit");
+let stayButton = document.querySelector("#btnStay")
 let playersButton = document.querySelector("#players-button");
 let newPlayerForm = document.querySelector("#new-player");
 let newNameForm = document.querySelector("#new-name");
-let playerDiv = document.querySelector("#players")
+let playerDiv = document.querySelector("#players");
 
-let completeDeck, deckId, oneCard, deckSpace, playerArea, playerName, playerNumber;
+let completeDeck, deckId, oneCard, playerArea, playerName, playerNumber;
 let playerChips, playerStartCard1, playerStartCard2, cardImage1, cardImage2, cardImage1Value, cardImage2Value;
-
+let deckSpace, deckSpaceValue, playerUpdatedNumber;
 
 // Add DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function(){
@@ -63,7 +65,7 @@ function drawCard () {
         });
 }
 
-function drawTwoCards () {
+function drawTwoCards (playerDiv) {
     fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=2")
     .then((res) => res.json())
     .then((drawCard) => { 
@@ -77,6 +79,7 @@ function drawTwoCards () {
         // Create Images for Cards
         playerStartCard1 = document.createElement("img")
         playerStartCard2 = document.createElement("img")
+        playerNumber = document.createElement("h5")
         
         // Create Content
         playerStartCard1.src = cardImage1
@@ -84,12 +87,20 @@ function drawTwoCards () {
         playerStartCard1.id = "deck-card"
         playerStartCard2.id = "deck-card"
         
+        let CardCount = Object.values(playerData[currentPlayer])
+        playerNumber.textContent = "Card Count: " + CardCount[2]
+        playerNumber.className = "playerNumber"
+        
         startingCardCount = cardImage1Value + cardImage2Value 
+        console.log("Starting Card: ", startingCardCount)
+        console.log("Card Image 1: ", cardImage1Value)
+        console.log("Card Image 2: " , cardImage2Value)
         playerNumber.textContent = "Card Count: " + startingCardCount
+        playerNumber.className = "playerNumber"
         
 
         //Append
-        playerArea.append(playerStartCard1, playerStartCard2)
+        playerDiv.append(playerNumber, playerStartCard1, playerStartCard2)
 
         //Console Logs
         console.log("Card Image 1: ", cardImage1)
@@ -119,46 +130,52 @@ playersButton.addEventListener("click", function (event) {
     // Create Elements for Player Area
     playerArea = document.createElement("div")
     playerName = document.createElement("h5")
-    playerNumber = document.createElement("h5")
     playerChips = document.createElement("h5")
     
     // Add Content
-    playerArea.className = "newPlayerCard"
     playerName.textContent = newNameForm.value
-    playerChips.textContent = "Chip Count: " + startingChipCount
+    createPlayerDiv(newNameForm.value, playerArea)
+
+    playerArea.className = "newPlayerCard"
+    playerArea.id = newNameForm.value
+    
+    let chipCount = Object.values(playerData[currentPlayer])
+    console.log(chipCount)
+    playerChips.textContent = "Chip Count: " + chipCount[1]
+    playerChips.className = "playerChips"
+    
 
     // Append Details
-    playerArea.append(playerName, playerNumber, playerChips)
+    playerArea.append(playerName, playerChips)
     playerDiv.append(playerArea)
 
-    drawTwoCards();
-    allPlayers.push(playerName)
-    console.log(allPlayers)
+    // drawTwoCards();
+    // playerData.push(playerArea)
+    console.log("ALL PLAYERS: ", playerData)
     newPlayerForm.reset()
 })
 
-// HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
 
-hitButton.addEventListener("click", function (event) {
-    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=1")
-    .then((res) => res.json())
-    .then((drawCard) => {
-        // currentPlayer = player
-        console.log("ONE CARD:", drawCard)
-        createCards(drawCard)
-        });  
-    console.log("HIT BUTTON CLICKED")
+
+// function createCards (card) {
+//     deckSpace = document.createElement("img")
+//     deckSpace.src = card.cards[0].image
+//     deckSpace.id = "deck-card"
+//     gameBody.append(deckSpace)
+// }
+
+//Deal Button Below - to Deal Cards to Each Player
+dealButton.addEventListener("click", function () {
+    // For each player - deal two cards
+    playerData.forEach(individual => {
+        drawTwoCards(individual.playerDiv)
+        console.log("PLAYER DIV: ", individual.playerDiv)
+    });
 })
 
-function createCards (card) {
-    deckSpace = document.createElement("img")
-    deckSpace.src = card.cards[0].image
-    deckSpace.id = "deck-card"
-    gameBody.append(deckSpace)
-}
 
 // New Game Button Below - to Shuffle Deck and Clear Out Players
-startButton.addEventListener("click", function () {
+newGameButton.addEventListener("click", function () {
     // Shuffle the Deck
     shuffleCards();
 
@@ -168,6 +185,76 @@ startButton.addEventListener("click", function () {
     }
 })
 
+// HIT BUTTON BELOW - PROBABLY NEED TO ADD CARD VALUES/21OVERBUST FUNCTINOALITY HERE
+
+hitButton.addEventListener("click", function (event) {
+    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=1")
+    .then((res) => res.json())
+    .then((drawCard) => {
+        console.log("ONE CARD:", drawCard)
+        // createCards(drawCard)
+        deckSpace = document.createElement("img")
+        deckSpace.src = drawCard.cards[0].image
+        deckSpace.id = "deck-card"
+        deckSpaceValue = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
+        startingCardCount = startingCardCount + deckSpaceValue
+        getCurrentPlayerNumber().textContent = "Card Count: " + startingCardCount   
+        // WHERE TO APPEND LATEST CARD - TARGET
+        getCurrentPlayerDiv().append(deckSpace)
+        });  
+    console.log("HIT BUTTON CLICKED")
+})
+
+stayButton.addEventListener("click", function (event) {
+    if (currentPlayer < playerData.length - 1) {
+    currentPlayer = currentPlayer + 1
+    currentPlayer = currentPlayer
+    }
+    else {
+        while (playerDiv.firstChild) {
+        playerDiv.removeChild(playerDiv.firstChild)
+    }
+    }
+})
+
+// function eachTurn () {
+//     console.log("ALL PLAYERS: ", allPlayers)
+//     let currentPlayerDiv = allPlayers[currentPlayer]
+//     stay
+//     // Stay BUtton to Increment Current Player
+//     // stayButton.addEventListener
+//     // Run to the end of array length - 1 (if)
+
+// }
+
+// eachTurn();
+
+function getCurrentPlayerDiv () {
+    return playerData[currentPlayer]
+}
+
+
+function getCurrentPlayerNumber () {
+    return getCurrentPlayerDiv().querySelector(".playerNumber")
+}
+
+function getCurrentPlayerChips() {
+    return getCurrentPlayerDiv().querySelector(".playerChips")
+}
+
+function createPlayerDiv(name, div) {
+    let playerState = {
+        name: `${name}`,
+        chipCount: 100,
+        cardCount: 0,
+        playerDiv: div
+    };
+    playerData.push(playerState);
+}
+
+function hit() {
+    playerData[currentPlayer]
+}
 
 // function createGamblers(card) {
 //     // Create or Modify Element

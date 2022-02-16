@@ -1,11 +1,10 @@
 // Create Variables
-// var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
-// var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 let deck = [];
 let playerData = [];
 let currentPlayer = 0;
 let startingCardCount = 0;
 let startingChipCount = 100;
+let dealerCardCount = 0;
 
 let gameBody = document.querySelector("#game-body");
 let dealButton = document.querySelector("#btnDeal");
@@ -17,10 +16,17 @@ let shuffleButton = document.querySelector("#btnShuffle")
 let newPlayerForm = document.querySelector("#new-player");
 let newNameForm = document.querySelector("#new-name");
 let playerDiv = document.querySelector("#players");
+let dealerButton = document.querySelector("#dealerBtn");
+let deckDealer = document.querySelector(".dealer");
+let deckDealerDiv = document.querySelector("#deckcount");
+let dealerCount = document.querySelector("#dealer-count");
+let dealerFirstCard = document.querySelector("#dealer-card-first");
 
-let completeDeck, deckId, oneCard, playerArea, playerName, playerNumber;
+let completeDeck, deckId, oneCard, playerArea, playerName, playerNumber, playerBetButton;
 let playerChips, playerStartCard1, playerStartCard2, cardImage1, cardImage2, cardImage1Value, cardImage2Value;
 let deckSpace, deckSpaceValue, playerUpdatedNumber;
+let dealerCardImage, dealerCardImageValue, dealerStartCard, dealerNumber, updateDealerCardCount;
+
 
 // Add DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function(){
@@ -29,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function(){
     // createPlayers(1);
     firstDeck();
     newDeck();
-    drawCard();
     // drawTwoCards();
     // shuffleCards();
     
@@ -62,9 +67,52 @@ function drawCard () {
     .then((drawCard) => {
         oneCard = drawCard
         console.log("ONE CARD:", drawCard)
-        // createGamblers(drawCard)
+        //Declare Card Elements
+        dealerCardImage = drawCard.cards[0].image
+        // NEED TO UPDATE THE ACES TO BE ONE OR TEN
+        dealerCardImageValue = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
+        // Create Images and Headers for Cards
+        dealerStartCard = document.createElement("img")
+        // Edit Content
+        dealerStartCard.src = dealerCardImage
+        dealerStartCard.id = "dealer-card"
+        dealerStartCard.className = "dealer-card"
+        dealerCount.textContent = "Card Count: " + dealerCardCount
+        dealerCardCount = dealerCardCount + dealerCardImageValue 
+        dealerCount.textContent = "Card Count: " + dealerCardCount
+
+        //Append
+        deckDealerDiv.append(dealerStartCard)
+        
         });
 }
+
+function drawFirstCard () {
+    fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=1")
+    .then((res) => res.json())
+    .then((drawCard) => {
+        oneCard = drawCard
+        console.log("ONE CARD:", drawCard)
+        //Declare Card Elements
+        dealerCardImage = drawCard.cards[0].image
+        // NEED TO UPDATE THE ACES TO BE ONE OR TEN
+        dealerCardImageValue = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
+        // Create Images and Headers for Cards
+        dealerStartCard = document.createElement("img")
+        // Edit Content
+        dealerStartCard.src = dealerCardImage
+        dealerStartCard.id = "dealer-card-first"
+        dealerStartCard.className = "dealer-card"
+        dealerCount.textContent = "Card Count: " + dealerCardCount
+        dealerCardCount = dealerCardCount + dealerCardImageValue 
+        dealerCount.textContent = "Card Count: " + dealerCardCount
+
+        //Append
+        deckDealerDiv.append(dealerStartCard)
+        
+        });
+}
+
 
 function drawTwoCards (player) {
     fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=2")
@@ -140,6 +188,7 @@ playersButton.addEventListener("click", function (event) {
     playerName = document.createElement("h5")
     playerChips = document.createElement("h5")
     playerNumber = document.createElement("h5")
+    playerBetButton = document.createElement("button")
     
     // Add Content
     playerName.textContent = newNameForm.value
@@ -152,10 +201,12 @@ playersButton.addEventListener("click", function (event) {
     console.log(chipCount)
     playerChips.textContent = "Chip Count: " + chipCount[1]
     playerChips.className = "playerChips"
+
+    playerBetButton.textContent = "Bet"
     
 
     // Append Details
-    playerArea.append(playerName, playerChips)
+    playerArea.append(playerName, playerChips, playerBetButton)
     playerDiv.append(playerArea)
 
     // drawTwoCards();
@@ -165,14 +216,6 @@ playersButton.addEventListener("click", function (event) {
 })
 
 
-
-// function createCards (card) {
-//     deckSpace = document.createElement("img")
-//     deckSpace.src = card.cards[0].image
-//     deckSpace.id = "deck-card"
-//     gameBody.append(deckSpace)
-// }
-
 //Deal Button Below - to Deal Cards to Each Player
 dealButton.addEventListener("click", function () {
     // For each player - deal two cards
@@ -180,6 +223,22 @@ dealButton.addEventListener("click", function () {
         drawTwoCards(individual)
         console.log("PLAYER DIV: ", individual)
     });
+    drawFirstCard();
+    drawCard();
+})
+
+
+// Dealer Button to Go
+dealerButton.addEventListener("click", function () {
+    if (dealerCardCount < 16) {
+        drawCard();
+    }
+    else if (dealerCardCount >= 16) {
+        dealerCount.style.display = "block";
+        console.log(dealerFirstCard)
+        // TO FIX: DEALER FIRST CARD NOT WORKING - CANNOT ACCESS
+        // dealerFirstCard.style.display = "block";
+    }
 })
 
 
@@ -201,6 +260,9 @@ newGameButton.addEventListener("click", function () {
       newGame(individual)
       console.log("NEw GAME PLAYER DIV: ", individual)
   });
+    dealerCardCount = 0;
+    let dealerCards = document.querySelectorAll(".dealer-card")
+    dealerCards.forEach(element => element.remove());
 })
 
 function newGame (player) {
@@ -250,6 +312,8 @@ hitButton.addEventListener("click", function (event) {
     console.log("HIT BUTTON CLICKED")
 })
 
+
+
 stayButton.addEventListener("click", function (event) {
     if (currentPlayer < playerData.length - 1) {
     currentPlayer = currentPlayer + 1
@@ -261,31 +325,6 @@ stayButton.addEventListener("click", function (event) {
     }
 )
 
-// function eachTurn () {
-//     console.log("ALL PLAYERS: ", allPlayers)
-//     let currentPlayerDiv = allPlayers[currentPlayer]
-//     stay
-//     // Stay BUtton to Increment Current Player
-//     // stayButton.addEventListener
-//     // Run to the end of array length - 1 (if)
-
-// }
-
-// eachTurn();
-
-// function getCurrentPlayerDiv () {
-//     return playerData[currentPlayer]
-// }
-
-
-// function getCurrentPlayerNumber () {
-//     return getCurrentPlayerDiv().querySelector(".playerNumber")
-// }
-
-// function getCurrentPlayerChips() {
-//     return getCurrentPlayerDiv().querySelector(".playerChips")
-// }
-
 function createPlayerDiv(name, div) {
     let playerState = {
         name: `${name}`,
@@ -295,227 +334,4 @@ function createPlayerDiv(name, div) {
     };
     playerData.push(playerState);
 }
-
-function hit() {
-    playerData[currentPlayer]
-}
-
-// function createGamblers(card) {
-//     // Create or Modify Element
-//     deckSpace = document.createElement("img")    
-
-//     // Add Content or Style to Element  
-//     deckSpace.src = card.cards[0].image
-//     deckSpace.id = "deck-card"
-    
-
-//     // Append if Necessary
-//     gameBody.append(deckSpace)
-// }
-
-
-// function createDeck()
-// {
-//     deck = [];
-//     for (var i = 0 ; i < values.length; i++)
-//     {
-//         for(var x = 0; x < suits.length; x++)
-//         {
-//             var weight = parseInt(values[i]);
-//             if (values[i] == "J" || values[i] == "Q" || values[i] == "K")
-//                 weight = 10;
-//             if (values[i] == "A")
-//                 weight = 11;
-//             var card = { Value: values[i], Suit: suits[x], Weight: weight };
-//             deck.push(card);
-//         }
-//     }
-// }
-
-// function createPlayers(num)
-// {
-//     players = [];
-//     for(let i = 1; i <= num; i++)
-//     {
-//         let hand = []
-//         let player = { Name: 'Player ' + i, ID: i, Points: 0, Hand: hand };
-//         players.push(player);
-//     }
-// }
-
-// function createPlayersUI()
-// {
-//     document.getElementById('players').innerHTML = '';
-//     for(var i = 0; i < players.length; i++)
-//     {
-//         var div_player = document.createElement('div');
-//         var div_playerid = document.createElement('div');
-//         var div_hand = document.createElement('div');
-//         var div_points = document.createElement('div');
-
-//         div_points.className = 'points';
-//         div_points.id = 'points_' + i;
-//         div_player.id = 'player_' + i;
-//         div_player.className = 'player';
-//         div_hand.id = 'hand_' + i;
-
-//         div_playerid.innerHTML = 'Player ' + players[i].ID;
-//         div_player.appendChild(div_playerid);
-//         div_player.appendChild(div_hand);
-//         div_player.appendChild(div_points);
-//         document.getElementById('players').appendChild(div_player);
-//     }
-// }
-
-// function shuffle()
-// {
-//     // for 1000 turns
-//     // switch the values of two random cards
-//     for (var i = 0; i < 1000; i++)
-//     {
-//         var location1 = Math.floor((Math.random() * deck.length));
-//         var location2 = Math.floor((Math.random() * deck.length));
-//         var tmp = deck[location1];
-
-//         deck[location1] = deck[location2];
-//         deck[location2] = tmp;
-//     }
-// }
-
-// function startblackjack()
-// {
-//     document.getElementById('btnStart').value = 'Restart';
-//     document.getElementById("status").style.display="none";
-//     // deal 2 cards to every player object
-//     currentPlayer = 0;
-//     createDeck();
-//     shuffle();
-//     createPlayers(2);
-//     createPlayersUI();
-//     dealHands();
-//     document.getElementById('player_' + currentPlayer).classList.add('active');
-// }
-
-// function dealHands()
-// {
-//     // alternate handing cards to each player
-//     // 2 cards each
-//     for(var i = 0; i < 2; i++)
-//     {
-//         for (var x = 0; x < players.length; x++)
-//         {
-//             var card = deck.pop();
-//             players[x].Hand.push(card);
-//             renderCard(card, x);
-//             updatePoints();
-//         }
-//     }
-
-//     updateDeck();
-// }
-
-// function renderCard(card, player)
-// {
-//     var hand = document.getElementById('hand_' + player);
-//     hand.appendChild(getCardUI(card));
-// }
-
-// function getCardUI(card)
-// {
-//     var el = document.createElement('div');
-//     var icon = '';
-//     if (card.Suit == 'Hearts')
-//     icon='&hearts;';
-//     else if (card.Suit == 'Spades')
-//     icon = '&spades;';
-//     else if (card.Suit == 'Diamonds')
-//     icon = '&diams;';
-//     else
-//     icon = '&clubs;';
-    
-//     el.className = 'card';
-//     el.innerHTML = card.Value + '<br/>' + icon;
-//     return el;
-// }
-
-// // returns the number of points that a player has in hand
-// function getPoints(player)
-// {
-//     var points = 0;
-//     for(var i = 0; i < players[player].Hand.length; i++)
-//     {
-//         points += players[player].Hand[i].Weight;
-//     }
-//     players[player].Points = points;
-//     return points;
-// }
-
-// function updatePoints()
-// {
-//     for (var i = 0 ; i < players.length; i++)
-//     {
-//         getPoints(i);
-//         document.getElementById('points_' + i).innerHTML = players[i].Points;
-//     }
-// }
-
-// function hitMe()
-// {
-//     // pop a card from the deck to the current player
-//     // check if current player new points are over 21
-//     var card = deck.pop();
-//     players[currentPlayer].Hand.push(card);
-//     renderCard(card, currentPlayer);
-//     updatePoints();
-//     updateDeck();
-//     check();
-// }
-
-// function stay()
-// {
-//     // move on to next player, if any
-//     if (currentPlayer != players.length-1) {
-//         document.getElementById('player_' + currentPlayer).classList.remove('active');
-//         currentPlayer += 1;
-//         document.getElementById('player_' + currentPlayer).classList.add('active');
-//     }
-
-//     else {
-//         end();
-//     }
-// }
-
-// function end()
-// {
-//     var winner = -1;
-//     var score = 0;
-
-//     for(var i = 0; i < players.length; i++)
-//     {
-//         if (players[i].Points > score && players[i].Points < 22)
-//         {
-//             winner = i;
-//         }
-
-//         score = players[i].Points;
-//     }
-
-//     document.getElementById('status').innerHTML = 'Winner: Player ' + players[winner].ID;
-//     document.getElementById("status").style.display = "inline-block";
-// }
-
-// function check()
-// {
-//     if (players[currentPlayer].Points > 21)
-//     {
-//         document.getElementById('status').innerHTML = 'Player: ' + players[currentPlayer].ID + ' LOST';
-//         document.getElementById('status').style.display = "inline-block";
-//         end();
-//     }
-// }
-
-// function updateDeck()
-// {
-//     document.getElementById('deckcount').innerHTML = deck.length;
-// }
 

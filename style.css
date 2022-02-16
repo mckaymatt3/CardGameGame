@@ -72,9 +72,8 @@
     margin: 5px;
     float: left;
     text-align: center;
-    width: 200px;
-    height: 275px;
-    position: relative;
+    width: 300px;
+    height: 400px;
 }
 
 .game .game-body
@@ -100,22 +99,6 @@
     margin: 3px;
     border:solid 3px;
 }
-
-#hit-card{
-    width: 75px;
-    height: 100px;
-    padding: 5px;
-    border: solid 1px #808080;
-    background-color: white;
-    display: inline-block;
-    border-radius: 5px;
-    font-size: 5pt;
-    text-align: center;
-    margin: 3px;
-    border:solid 3px;
-    position: relative;
-}
-
 
 .game .status
 {
@@ -152,13 +135,61 @@
     margin: 10px;
 }
 
-.deck{
+.dealer{
     float:left;
-    background: white;
+    background: gold;
     color:#222;
-    padding: 10px;
-    border-radius:10px;
+    padding: 5px;
+    border-radius:5px;
     border: double 5px;
+    width: 150px;
+    height: 275px;
+    position: relative;
+}
+
+
+#dealer-card{
+    width: 50px;
+    height: 75px;
+    padding: 3px;
+    border: solid 1px #808080;
+    background-color: white;
+    display: inline-block;
+    border-radius: 3px;
+    font-size: 3pt;
+    text-align: center;
+    margin: center;
+    border:solid 3px;
+}
+
+#dealer-card-first{
+    width: 50px;
+    height: 75px;
+    padding: 3px;
+    border: solid 1px #808080;
+    background-color: white;
+    display: inline-block;
+    border-radius: 3px;
+    font-size: 3pt;
+    text-align: center;
+    margin: center;
+    border:solid 3px;
+    display: none;
+}
+
+#dealer-name{
+    padding: 2px;
+    margin: 2px;
+}
+
+#dealer-count{
+    padding: 2px;
+    margin: 2px;
+    display: none;
+}
+
+#dealerBtn{
+    margin: 2px;
 }
 
 .btn

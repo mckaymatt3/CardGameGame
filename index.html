@@ -21,7 +21,6 @@
                 <div id="game-body" class="game-body">
                     
                     <div class="game-options">
-                        <input type ="button" id ="btnBet" class="btn" value ="Bet">
                         <input type="button" id="btnDeal" class="btn" value="Deal">
                         <input type="button" id="btnHit" class="btn" value="Hit">
                         <input type="button" id="btnStay" class="btn" value="Stay">
@@ -31,8 +30,11 @@
     
                             <div class="status" id="status"></div>
                 
-                        <div id="deck" class="deck">
-                            <div id="deckcount">416</div>
+                        <div id="deck" class="dealer">
+                            <h5 id ="dealer-name">Dealer</h5>
+                            <h5 id="dealer-count">Card Count: 0</h5>
+                            <div id="deckcount"></div>
+                            <input type="button" id="dealerBtn" class="btn" value="Dealer Play">
                         </div>
 
                         <div id="players" class="players">

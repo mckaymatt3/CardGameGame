@@ -33,15 +33,20 @@
 {
     display: block;
     padding: 1px;
-    color:white;
+    color: purple;
     justify-content: center;
     align-items: center;
+    font-family: 'Casino 3D Marquee', sans-serif;
+    margin: 3px;
+    font-size: 50px;
 }
 
 .game h3
 {
     padding: 1px;
-    color:white;
+    font-family: 'Casino Shadow', sans-serif;
+    color:gold;
+    font-size: 20px;
 }
 
 .game h5

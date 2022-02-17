@@ -203,8 +203,12 @@ playersButton.addEventListener("click", function (event) {
     playerChips.className = "playerChips"
 
     playerBetButton.textContent = "Bet"
-    
+    playerBetButton.addEventListener("click", function (event){
+       console.log("CLICKED BET")
+       
 
+    })
+    
     // Append Details
     playerArea.append(playerName, playerChips, playerBetButton)
     playerDiv.append(playerArea)
@@ -214,6 +218,8 @@ playersButton.addEventListener("click", function (event) {
     console.log("ALL PLAYERS: ", playerData)
     newPlayerForm.reset()
 })
+
+//Bet Button Function Below
 
 
 //Deal Button Below - to Deal Cards to Each Player

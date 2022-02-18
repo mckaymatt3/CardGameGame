@@ -114,6 +114,35 @@ function drawFirstCard () {
 }
 
 
+function findCardValue (card) {
+    let value;
+    switch (card) {
+        case "JACK": 
+        case "QUEEN":
+        case "KING":
+            value = 10;
+            break;
+        case "ACE":
+            let currentCardCount = getCurrentPlayerCardCount();
+            if (currentCardCount <= 10) {
+                value = 11
+            }
+            else {
+                value = 1
+            }
+            break;
+        default: 
+            value = parseInt(card)
+            break;
+    }
+    getCurrentPlayerCardCount();
+    return value
+}
+
+function getCurrentPlayerCardCount () {
+    return playerData[currentPlayer].cardCount
+}
+
 function drawTwoCards (player) {
     fetch("https://deckofcardsapi.com/api/deck/vnynz95sxexi/draw/?count=2")
     .then((res) => res.json())
@@ -122,9 +151,9 @@ function drawTwoCards (player) {
         cardImage1 = drawCard.cards[0].image
         cardImage2 = drawCard.cards[1].image
         // NEED TO UPDATE THE ACES TO BE ONE OR TEN
-        cardImage1Value = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
-        cardImage2Value = parseInt(drawCard.cards[1].value) ? parseInt(drawCard.cards[1].value) : 10
-        
+        cardImage1Value = findCardValue(drawCard.cards[0].value)
+        cardImage2Value = findCardValue(drawCard.cards[1].value)
+
         // Create Images for Cards
         playerStartCard1 = document.createElement("img")
         playerStartCard2 = document.createElement("img")
@@ -204,9 +233,23 @@ playersButton.addEventListener("click", function (event) {
 
     playerBetButton.textContent = "Bet"
     playerBetButton.addEventListener("click", function (event){
-       console.log("CLICKED BET")
-       
-
+       event.preventDefault();
+       let playerClickDiv = document.createElement("div")
+       let playerClickDivP = document.createElement("p") 
+       let playerClickDivImage = document.createElement("img")
+       let playerClickDivButton = document.createElement("button")
+       playerClickDivButton.textContent = ' x '
+       playerClickDivButton.addEventListener ("click", function (event) {
+        playerClickDiv.remove()
+       })
+       playerClickDiv.className = "playerClickDiv"
+       playerClickDivP.textContent = "Lil Dicky PSA: Save Dat Money"
+       playerClickDivImage.src = "https://media1.giphy.com/media/l46CcWOMVIcvDTd3W/giphy.gif?cid=790b761159badc578640c0f000addef2687a6703b1407d5f&rid=giphy.gif&ct=g"
+       playerClickDivImage.className = "playerCickDivImage"
+       playerClickDiv.append(playerClickDivP, playerClickDivImage, playerClickDivButton)
+       playerArea.append(playerClickDiv)
+       console.log("playerClickDivP: ", playerClickDivP)
+    //    playerBetButton.remove();
     })
     
     // Append Details
@@ -217,6 +260,7 @@ playersButton.addEventListener("click", function (event) {
     // playerData.push(playerArea)
     console.log("ALL PLAYERS: ", playerData)
     newPlayerForm.reset()
+    
 })
 
 //Bet Button Function Below
@@ -270,7 +314,7 @@ newGameButton.addEventListener("click", function () {
     let dealerCards = document.querySelectorAll(".dealer-card")
     let dealerCardHeader = document.querySelector("#dealer-count")
     dealerCards.forEach(element => element.remove());
-    dealerCardHeader.remove();
+    dealerCardHeader.style.display = "none";
 })
 
 function newGame (player) {
@@ -302,7 +346,7 @@ hitButton.addEventListener("click", function (event) {
         deckSpace.src = drawCard.cards[0].image
         deckSpace.id = "deck-card"
         deckSpace.className = "userCard"
-        deckSpaceValue = parseInt(drawCard.cards[0].value) ? parseInt(drawCard.cards[0].value) : 10
+        deckSpaceValue = findCardValue(drawCard.cards[0].value)
         let playerNumberUpdate = playerData[currentPlayer].playerDiv.querySelector(".playerNumber")
         console.log("Player Number Update: ", playerNumberUpdate)
         let playerCardUpdate = playerData[currentPlayer].playerDiv

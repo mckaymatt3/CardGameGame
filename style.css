@@ -199,6 +199,25 @@ body {
     margin: 2px;
 }
 
+.playerClickDiv {
+    width: 500px;
+    background-color: palevioletred;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+.playerClickDivImage {
+    width: 400px;
+}
+
+
+
 .btn
 {
     background:darkmagenta;

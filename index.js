@@ -268,7 +268,9 @@ newGameButton.addEventListener("click", function () {
   });
     dealerCardCount = 0;
     let dealerCards = document.querySelectorAll(".dealer-card")
+    let dealerCardHeader = document.querySelector("#dealer-count")
     dealerCards.forEach(element => element.remove());
+    dealerCardHeader.remove();
 })
 
 function newGame (player) {
